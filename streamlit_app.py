@@ -13,6 +13,7 @@ st.title("📊 Express MMM")
 st.title("Get Instant MMM Results")
 st.title("Because complex modeling should be simple.")
 st.markdown("**Created by Aayush Sethi** | [Reach out to me on LinkedIn](https://www.linkedin.com/in/aayushsethi/)", unsafe_allow_html=True)
+st.markdown("📝 **Check Out the Blog Post!** | [Read it on Medium](https://aayush19.medium.com/run-a-media-mixed-model-with-no-code-in-minutes-dbdc18ad8723) 🚀", unsafe_allow_html=True)
 
 
 
