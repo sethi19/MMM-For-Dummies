@@ -102,7 +102,7 @@ if uploaded_file is not None:
                 "intercept": Prior("HalfNormal", sigma=0.5),
                 "saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
                 "saturation_lam": Prior("Gamma", alpha=3, beta=1, dims="channel"),
-                "gamma_control": Prior("Normal", mu=0, sigma=0.05),
+                "gamma_control": Prior("Normal", mu=0, sigma=0.2),
                 "gamma_fourier": Prior("Laplace", mu=0, b=1),
                 "likelihood": Prior("Normal", sigma=Prior("HalfNormal", sigma=0.5)),
             }
