@@ -9,7 +9,17 @@ from pymc_marketing.prior import Prior
 from pymc_marketing.mmm.evaluation import compute_summary_metrics
 
 # Streamlit app title
-st.title("📊 Marketing Mix Modeling (MMM) with PyMC")
+st.title("📊 Marketing Mix Modeling (MMM) Made Easy")
+st.markdown("**Created by Aayush Sethi** | [Reach out to me on LinkedIn](https://www.linkedin.com/in/aayushsethi/)", unsafe_allow_html=True)
+
+
+with st.expander("📌 Prerequisites of Running Model"):
+    st.markdown("""
+    - ✅ Have **6 months** or **1 year** worth of spending data.
+    - ✅ Make sure you add a **control column** (e.g., seasonality, trend, residual, economic variables, etc.).
+    - ⚠️ If you **don't** add control variables, **budget allocation will not work**.
+    - 🔗 **Source:** [PyMC Marketing MMM Guide](https://www.pymc-marketing.io/en/stable/notebooks/mmm/mmm_example.html)
+    """)
 
 # File uploader
 uploaded_file = st.file_uploader("📂 Upload a CSV file", type=["csv"])
@@ -54,8 +64,8 @@ if uploaded_file is not None:
             prior_sigma = spend_share.loc[spend_cols].to_numpy()
 
             # Prepare data for MMM
-            X = raw_data[spend_cols + control_cols + ["date"]]  # ✅ FIXED
-            y = raw_data[y_col].squeeze()  # ✅ FIXED: Ensures y is 1D
+            X = raw_data[spend_cols + control_cols + ["date"]]
+            y = raw_data[y_col].squeeze()
 
             # Define model configuration
             model_config = {
@@ -78,7 +88,7 @@ if uploaded_file is not None:
             mmm = MMM(
                 model_config=model_config,
                 sampler_config=sampler_config,
-                date_column="date",  # ✅ FIXED
+                date_column="date",
                 adstock=GeometricAdstock(l_max=10),
                 saturation=LogisticSaturation(),
                 channel_columns=spend_cols,
@@ -87,7 +97,7 @@ if uploaded_file is not None:
             )
 
             # Fit the model
-            st.write("🔄 Running PyMC MMM Model...")
+            st.write("🔄 Running PyMC MMM Model | Chill this might take a few minutes...")
             mmm.fit(X=X, y=y, target_accept=0.95, random_seed=67)
             st.success("✅ MMM Model Training Complete!")
 
@@ -97,9 +107,9 @@ if uploaded_file is not None:
 
             # Compute R²
             summary_metrics = compute_summary_metrics(
-                y_true=mmm.y,  # ✅ FIXED: No need for .to_numpy()
-                y_pred=posterior_preds.y.values,  
-                metrics_to_calculate=["r_squared"]  
+                y_true=mmm.y,
+                y_pred=posterior_preds.y.values,
+                metrics_to_calculate=["r_squared"]
             )
 
             # Extract R² value
@@ -112,8 +122,6 @@ if uploaded_file is not None:
             # Plot Posterior Predictive
             fig = mmm.plot_posterior_predictive(original_scale=True)
             fig.gca().set(xlabel="Date", ylabel=y_col)
-
-            # Display the plot in Streamlit
             st.pyplot(fig)
 
             # Plot Waterfall Components Decomposition
@@ -121,11 +129,27 @@ if uploaded_file is not None:
             st.write("### 📊 Media & Baseline Contributions")
             st.pyplot(fig1)
 
+            # --- Compute ROAS ---
+            channel_contribution_original_scale = mmm.compute_channel_contribution_original_scale()
+            spend_sum = X[spend_cols].sum().to_numpy()
+            spend_sum = spend_sum[np.newaxis, np.newaxis, :]  # Adjust for dimensions
+
+            roas_samples = channel_contribution_original_scale.sum(dim="date") / spend_sum
+
+            # Plot ROAS
+            fig_roas, ax = plt.subplots(figsize=(10, 6))
+            az.plot_forest(roas_samples, combined=True, ax=ax)
+            fig_roas.suptitle("Return on Ads Spend (ROAS)", fontsize=18, fontweight="bold")
+
+            # Display ROAS in Streamlit
+            st.write("### 📊 Return on Ad Spend (ROAS)")
+            st.pyplot(fig_roas)
+
             ### --- Spend vs Effect DataFrame ---
             # Spend DF
             spend_df = pd.DataFrame(spend_share).reset_index()
             spend_df.columns = ["Channel", "Spend Share"]
-            spend_df["spend_share"] = (spend_df["Spend Share"] * 100 ).round(2)
+            spend_df["spend_share"] = (spend_df["Spend Share"] * 100).round(2)
             spend_df = spend_df[['Channel', 'spend_share']]
 
             # Effect DF
@@ -149,7 +173,7 @@ if uploaded_file is not None:
             x = np.arange(len(spend_effect["Channel"]))
             bar_width = 0.4  
             fig2, ax = plt.subplots(figsize=(10, 6))
-            ax.barh(x - bar_width/2, spend_effect["spend_share"], height=bar_width, label="Spend Share", color="#9ec72c")
+            ax.barh(x - bar_width/2, spend_effect["spend_share"], height=bar_width, label="Spend Share", color="#8eb3ed")
             ax.barh(x + bar_width/2, spend_effect["effect_share"], height=bar_width, label="Effect Share", color="black")
             ax.set_yticks(x)
             ax.set_yticklabels(spend_effect["Channel"])
@@ -164,8 +188,61 @@ if uploaded_file is not None:
             # --- Direct Contribution Curves ---
             st.write("### 📈 Direct Contribution Curves")
             fig3 = mmm.plot_direct_contribution_curves()
-            [ax.set(xlabel="x") for ax in fig3.axes]  # ✅ Label x-axis
+            [ax.set(xlabel="x") for ax in fig3.axes]
             st.pyplot(fig3)
+
+            # Budget Allocation Optimization
+            num_periods = X['date'].shape[0]
+            all_budget = raw_data[spend_cols].sum().sum()
+            per_channel_weekly_budget = all_budget / (num_periods * len(spend_cols))
+            percentage_change = 0.2
+
+            mean_spend_per_period_test = raw_data[spend_cols].sum(axis=0) / (num_periods * len(spend_cols))
+
+            budget_bounds = {
+                key: [(1 - percentage_change) * value, (1 + percentage_change) * value]
+                for key, value in mean_spend_per_period_test.to_dict().items()
+            }
+
+            allocation_strategy, _ = mmm.optimize_budget(
+                budget=per_channel_weekly_budget,
+                num_periods=num_periods,
+                budget_bounds=budget_bounds,
+                minimize_kwargs={"method": "SLSQP", "options": {"ftol": 1e-9, "maxiter": 5000}},
+            )
+
+            # Create allocation DataFrame
+            df_allocation = pd.DataFrame({
+                "optimized_allocation": pd.Series(allocation_strategy, index=mean_spend_per_period_test.index),
+                "initial_allocation": mean_spend_per_period_test
+            })
+
+            df_allocation["Current Spend"] = ((df_allocation["initial_allocation"] / df_allocation["initial_allocation"].sum()) * 100).round(2)
+            df_allocation["Allocated Spend"] = ((df_allocation["optimized_allocation"] / df_allocation["optimized_allocation"].sum()) * 100).round(2)
+            df_allocation = df_allocation.reset_index()
+            df_allocation = df_allocation.sort_values(by="Current Spend", ascending=False)
+
+            # Plot Budget Allocation
+            bar_width = 0.6
+            x = np.arange(len(df_allocation["index"])) * 1.5  # Increase spacing
+
+            fig_alloc, ax = plt.subplots(figsize=(14, 8))
+            ax.bar(x - bar_width/2, df_allocation["Current Spend"], width=bar_width, color="#8eb3ed", label="Current Spend")
+            ax.bar(x + bar_width/2, df_allocation["Allocated Spend"], width=bar_width, color="black", label="Allocated Spend")
+
+            for bar in ax.patches:
+                ax.text(bar.get_x() + bar.get_width()/2, bar.get_height(), f"{bar.get_height():.2f}%", 
+                        ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+            ax.set_xticks(ticks=x)
+            ax.set_xticklabels(df_allocation["index"], rotation=45, ha='right')
+            ax.legend()
+            ax.set_title('Budget Allocation')
+
+            # Display Budget Allocation in Streamlit
+            st.write("### 💰 Budget Allocation Optimization")
+            st.pyplot(fig_alloc)
+
 
             model_path = "model.nc"
             mmm.save(model_path)
