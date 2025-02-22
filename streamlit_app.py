@@ -14,6 +14,17 @@ st.title("Get Instant MMM Results")
 st.title("Because complex modeling should be simple.")
 st.markdown("**Created by Aayush Sethi** | [Reach out to me on LinkedIn](https://www.linkedin.com/in/aayushsethi/)", unsafe_allow_html=True)
 
+
+
+with st.expander("❓ What is MMM?"):
+    st.markdown("""
+    - 📊 **Media Mix Modeling (MMM)** is a technique that helps marketers measure the impact of their marketing and advertising campaigns.
+    - 🎯 It shows how different channels—like TV, social media, and digital ads—contribute to conversions and sales.
+    - 🔍 Marketers use MMM to refine campaigns based on trends, external factors, and consumer behavior.
+    - 🚀 The goal? Optimize marketing spend to maximize engagement and revenue.
+    """)
+
+    
 st.markdown("### 📈 How Does This App Work?")
 with st.expander("🔍 Click to Expand"):
     st.markdown("""
