@@ -14,6 +14,7 @@ st.title("Get Instant MMM Results")
 st.title("Because complex modeling should be simple.")
 st.markdown("**Created by Aayush Sethi** | [Reach out to me on LinkedIn](https://www.linkedin.com/in/aayushsethi/)", unsafe_allow_html=True)
 st.markdown("📝 **Check Out the Blog Post!** | [Read it on Medium](https://aayush19.medium.com/run-a-media-mixed-model-with-no-code-in-minutes-dbdc18ad8723) 🚀", unsafe_allow_html=True)
+st.markdown("📝 **Demo Video** | [Watch Demo](https://www.youtube.com/watch?v=rrAqniwkpCw&ab_channel=aayushsethi) 🚀", unsafe_allow_html=True)
 
 
 
@@ -25,7 +26,7 @@ with st.expander("❓ What is MMM?"):
     - 🚀 The goal? Optimize marketing spend to maximize engagement and revenue.
     """)
 
-    
+
 st.markdown("### 📈 How Does This App Work?")
 with st.expander("🔍 Click to Expand"):
     st.markdown("""
@@ -98,10 +99,10 @@ if uploaded_file is not None:
 
             # Define model configuration
             model_config = {
-                "intercept": Prior("HalfNormal", sigma=0.2),
+                "intercept": Prior("HalfNormal", sigma=0.4),
                 "saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
                 "saturation_lam": Prior("Gamma", alpha=3, beta=1, dims="channel"),
-                "gamma_control": Prior("Normal", mu=0, sigma=0.3),
+                "gamma_control": Prior("Normal", mu=0, sigma=0.2),
                 "gamma_fourier": Prior("Laplace", mu=0, b=1),
                 "likelihood": Prior("Normal", sigma=Prior("HalfNormal", sigma=0.5)),
             }
@@ -121,8 +122,7 @@ if uploaded_file is not None:
                 adstock=GeometricAdstock(l_max=10),
                 saturation=LogisticSaturation(),
                 channel_columns=spend_cols,
-                control_columns=control_cols,
-                yearly_seasonality=1,
+                control_columns=control_cols
             )
 
             # Fit the model
