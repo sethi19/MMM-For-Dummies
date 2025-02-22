@@ -9,17 +9,34 @@ from pymc_marketing.prior import Prior
 from pymc_marketing.mmm.evaluation import compute_summary_metrics
 
 # Streamlit app title
-st.title("📊 Marketing Mix Modeling (MMM) Made Easy")
+st.title("📊 Express MMM")
+st.title("Get Instant MMM Results")
+st.title("Because complex modeling should be simple.")
 st.markdown("**Created by Aayush Sethi** | [Reach out to me on LinkedIn](https://www.linkedin.com/in/aayushsethi/)", unsafe_allow_html=True)
 
-
-with st.expander("📌 Prerequisites of Running Model"):
+st.markdown("### 📈 How Does This App Work?")
+with st.expander("🔍 Click to Expand"):
     st.markdown("""
-    - ✅ Have **6 months** or **1 year** worth of spending data.
-    - ✅ Make sure you add a **control column** (e.g., seasonality, trend, residual, economic variables, etc.).
-    - ⚠️ If you **don't** add control variables, **budget allocation will not work**.
-    - 🔗 **Source:** [PyMC Marketing MMM Guide](https://www.pymc-marketing.io/en/stable/notebooks/mmm/mmm_example.html)
+    - 📂 **Upload Data:** Upload a CSV file containing your marketing data.
+    - 🛠️ **Select Columns:** Choose the date column, dependent variable, media spend columns, and control columns.
+    - 🚀 **Run Model:** Click 'Run MMM Model' to train the model.
+    - 📊 **Model Performance:** View key performance metrics and visualizations.
+    - 💰 **Budget Allocation:** Optimize spending across different channels.
     """)
+
+st.markdown("### 📌 Prerequisites for Running the Model")
+with st.expander("⚠️ Important Requirements"):
+    st.markdown("""
+    - 📆 **Data Duration:** Have at least **6 months to 1 year** of **daily or weekly** data.
+    - 🎛️ **Control Columns Recommended:** If R² is low, add control variables (e.g., seasonality, economic factors, trends) to improve accuracy.
+    - 📉 **Sufficient Variability:** Your media spend should fluctuate—constant spend won’t provide useful insights.
+    - ❌ **No Missing Data:** Ensure no missing values in the selected columns (date, spend, and dependent variable).
+    - 📡 **Multiple Channels:** Works best when you have multiple media spend channels (TV, podcasts, social, etc.).
+    - 📈 **Enough Data Points:** At least **30-50 weeks** of data is recommended for stable results.
+    - 🔄 **Avoid Collinear Channels:** Highly correlated spend columns can distort attribution.
+    - 💡 **Budget Allocation Requires Control Columns:** If skipped, budget allocation suggestions may not be reliable.
+    """)
+
 
 # File uploader
 uploaded_file = st.file_uploader("📂 Upload a CSV file", type=["csv"])
