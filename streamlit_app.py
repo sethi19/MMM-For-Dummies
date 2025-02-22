@@ -8,6 +8,7 @@ from pymc_marketing.mmm import MMM, GeometricAdstock, LogisticSaturation
 from pymc_marketing.prior import Prior
 from pymc_marketing.mmm.evaluation import compute_summary_metrics
 
+st.set_page_config(page_title="ExpressMMM", page_icon="📊")
 # Streamlit app title
 st.title("📊 Express MMM")
 st.title("Get Instant MMM Results")
