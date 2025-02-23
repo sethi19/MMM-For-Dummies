@@ -100,18 +100,22 @@ if uploaded_file is not None:
             # Define model configuration
             model_config = {
                 "intercept": Prior("HalfNormal", sigma=0.5),
-                "saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
+                "saturation_beta": Prior("HalfNormal", sigma=np.minimum(0.05, prior_sigma), dims="channel"),  # Lower variance
+
+                #"saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
                 "saturation_lam": Prior("Gamma", alpha=3, beta=1, dims="channel"),
-                "gamma_control": Prior("Normal", mu=0, sigma=0.05),
-                "gamma_fourier": Prior("Laplace", mu=0, b=1),
-                "likelihood": Prior("Normal", sigma=Prior("HalfNormal", sigma=0.5)),
+                "gamma_control": Prior("Normal", mu=0, sigma=0.02),
+                "gamma_fourier": Prior("Laplace", mu=0, b=0.3),
+                "likelihood": Prior("StudentT", nu=4, sigma=Prior("HalfNormal", sigma=0.3))
+
+                #"likelihood": Prior("Normal", sigma=Prior("HalfNormal", sigma=0.3)),
             }
 
             sampler_config = {
                 "progressbar": True,
-                "chains": 2,
-                "draws": 4000,
-                "tune": 2000,
+                "chains": 4,
+                "draws": 10000,
+                "tune": 5000,
             }
 
             # Instantiate MMM model
@@ -119,7 +123,7 @@ if uploaded_file is not None:
                 model_config=model_config,
                 sampler_config=sampler_config,
                 date_column="date",
-                adstock=GeometricAdstock(l_max=10),
+                adstock=GeometricAdstock(l_max=20),
                 saturation=LogisticSaturation(),
                 channel_columns=spend_cols,
                 control_columns=control_cols
