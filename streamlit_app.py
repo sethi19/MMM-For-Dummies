@@ -113,9 +113,9 @@ if uploaded_file is not None:
 
             sampler_config = {
                 "progressbar": True,
-                "chains": 4,
-                "draws": 10000,
-                "tune": 5000,
+                "chains": 2,
+                "draws": 5000,
+                "tune": 2500,
             }
 
             # Instantiate MMM model
