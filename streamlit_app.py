@@ -102,7 +102,7 @@ if uploaded_file is not None:
                 "intercept": Prior("HalfNormal", sigma=0.5),
                 "saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
                 "saturation_lam": Prior("Gamma", alpha=3, beta=1, dims="channel"),
-                "gamma_control": Prior("Normal", mu=0, sigma=0.2),
+                "gamma_control": Prior("Normal", mu=0, sigma=0.05),
                 "gamma_fourier": Prior("Laplace", mu=0, b=1),
                 "likelihood": Prior("Normal", sigma=Prior("HalfNormal", sigma=0.5)),
             }
@@ -110,8 +110,8 @@ if uploaded_file is not None:
             sampler_config = {
                 "progressbar": True,
                 "chains": 2,
-                "draws": 2000,
-                "tune": 1000,
+                "draws": 4000,
+                "tune": 2000,
             }
 
             # Instantiate MMM model
@@ -119,7 +119,7 @@ if uploaded_file is not None:
                 model_config=model_config,
                 sampler_config=sampler_config,
                 date_column="date",
-                adstock=GeometricAdstock(l_max=8),
+                adstock=GeometricAdstock(l_max=10),
                 saturation=LogisticSaturation(),
                 channel_columns=spend_cols,
                 control_columns=control_cols
