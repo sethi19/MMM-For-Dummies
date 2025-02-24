@@ -12,11 +12,26 @@ st.set_page_config(page_title="ExpressMMM", page_icon="📊")
 # Streamlit app title
 st.title("📊 Express MMM")
 st.title("Get Instant MMM Results")
-st.title("Because complex modeling should be simple.")
 st.markdown("**Created by Aayush Sethi** | [Reach out to me on LinkedIn](https://www.linkedin.com/in/aayushsethi/)", unsafe_allow_html=True)
 st.markdown("📝 **Check Out the Blog Post!** | [Read it on Medium](https://aayush19.medium.com/run-a-media-mixed-model-with-no-code-in-minutes-dbdc18ad8723) 🚀", unsafe_allow_html=True)
 st.markdown("🎥 **Demo Video** | [Watch Demo](https://www.youtube.com/watch?v=rrAqniwkpCw&ab_channel=aayushsethi) 📺", unsafe_allow_html=True)
 
+with st.expander("🚀 Why I Created ExpressMMM"):
+    st.markdown("""
+    📢 **Making Marketing Mix Modeling (MMM) accessible to everyone!**  
+
+    ✅ **Inspired by Google's LightweightMMM** – I wanted to create a tool that’s just as quick and easy but even **simpler**, with a **no-code** approach.  
+
+    🛠️ **Built for Marketers** – ExpressMMM allows marketers to run MMM analyses **without needing a data expert** or coding knowledge.  
+
+    💡 **Helping Small Agencies** – My goal is for small marketing agencies to **start using MMM for free** or at least dip their feet into marketing analytics without heavy technical barriers.  
+
+    🤝 **Looking for Contributors!** – I hope to **grow this project** into a powerful, open-source resource for agencies and non-technical users.  
+
+    📬 **Let’s Connect!** – If you’re interested in collaborating, I’d love to chat!  
+
+    🔗 **GitHub Repository**: [MMM-For-Dummies](https://github.com/sethi19/MMM-For-Dummies)
+    """)
 
 with st.expander("❓ What is MMM?"):
     st.markdown("""
@@ -100,9 +115,7 @@ if uploaded_file is not None:
             # Define model configuration
             model_config = {
                 "intercept": Prior("HalfNormal", sigma=0.5),
-                "saturation_beta": Prior("HalfNormal", sigma=np.minimum(0.05, prior_sigma), dims="channel"),  # Lower variance
-
-                #"saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
+                "saturation_beta": Prior("HalfNormal", sigma=prior_sigma, dims="channel"),
                 "saturation_lam": Prior("Gamma", alpha=3, beta=1, dims="channel"),
                 "gamma_control": Prior("Normal", mu=0, sigma=0.02),
                 "gamma_fourier": Prior("Laplace", mu=0, b=0.3),
