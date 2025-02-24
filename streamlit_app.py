@@ -127,8 +127,8 @@ if uploaded_file is not None:
             sampler_config = {
                 "progressbar": True,
                 "chains": 2,
-                "draws": 5000,
-                "tune": 2500,
+                "draws": 1000,
+                "tune": 500,
             }
 
             # Instantiate MMM model
@@ -136,15 +136,16 @@ if uploaded_file is not None:
                 model_config=model_config,
                 sampler_config=sampler_config,
                 date_column="date",
-                adstock=GeometricAdstock(l_max=20),
+                adstock=GeometricAdstock(l_max=15),
                 saturation=LogisticSaturation(),
                 channel_columns=spend_cols,
                 control_columns=control_cols
             )
 
             # Fit the model
+            rnd_seed = random.randint(0, 10000)
             st.write("🔄 Running PyMC MMM Model | Chill this might take a few minutes...")
-            mmm.fit(X=X, y=y, target_accept=0.95, random_seed=67)
+            mmm.fit(X=X, y=y, target_accept=0.98, random_seed=rnd_seed)
             st.success("✅ MMM Model Training Complete!")
 
             # Sample from posterior predictive
