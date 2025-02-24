@@ -111,6 +111,7 @@ if uploaded_file is not None:
             # Prepare data for MMM
             X = raw_data[spend_cols + control_cols + ["date"]]
             y = raw_data[y_col].squeeze()
+            rnd_seed = abs(hash(pd.Timestamp.now())) % 10000
 
             # Define model configuration
             model_config = {
@@ -150,7 +151,7 @@ if uploaded_file is not None:
 
             # Sample from posterior predictive
             st.write("🔍 Generating Posterior Predictive Samples...")
-            posterior_preds = mmm.sample_posterior_predictive(X, random_seed=45)
+            posterior_preds = mmm.sample_posterior_predictive(X, random_seed=rnd_seed)
 
             # Compute R²
             summary_metrics = compute_summary_metrics(
