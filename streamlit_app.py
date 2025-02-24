@@ -20,8 +20,8 @@ with st.expander("🚀 Why I Created ExpressMMM"):
     st.markdown("""
     📢 **Making Marketing Mix Modeling (MMM) accessible to everyone!**  
 
-    ✅ **Inspired by Google's LightweightMMM** – I wanted to create a tool that’s just as quick and easy but even **simpler**, with a **no-code** approach.  
-
+    ✅ Inspired by Google's LightweightMMM – I set out to create a tool that’s just as fast and efficient, but even simpler with a no-code approach. ExpressMMM runs on PyMC under the hood, ensuring powerful Bayesian modeling while keeping it accessible for marketers and non-technical users. 🚀
+    
     🛠️ **Built for Marketers** – ExpressMMM allows marketers to run MMM analyses **without needing a data expert** or coding knowledge.  
 
     💡 **Helping Small Agencies** – My goal is for small marketing agencies to **start using MMM for free** or at least dip their feet into marketing analytics without heavy technical barriers.  
