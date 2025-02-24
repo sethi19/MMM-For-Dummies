@@ -144,7 +144,7 @@ if uploaded_file is not None:
             )
 
             # Fit the model
-            rnd_seed = random.randint(0, 10000)
+            
             st.write("🔄 Running PyMC MMM Model | Chill this might take a few minutes...")
             mmm.fit(X=X, y=y, target_accept=0.98, random_seed=rnd_seed)
             st.success("✅ MMM Model Training Complete!")
